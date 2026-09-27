@@ -1,1 +1,95 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — YowisBenxDeveloper</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  min-height:100vh; background:#262626;
+  font-family:-apple-system,'Segoe UI',Roboto,sans-serif;
+  display:flex; flex-direction:column; align-items:center;
+  padding:60px 16px 30px;
+}
+h1 { color:#fff; font-size:32px; font-weight:700; margin-bottom:34px; text-align:center; }
+.card {
+  background:#fff; border-radius:14px; width:100%; max-width:460px;
+  padding:44px 40px 30px; text-align:center;
+}
+.logo { width:120px; margin:0 auto 10px; }
+.brand-name { color:#1e3a6e; font-size:20px; font-weight:800; letter-spacing:.5px; }
+.brand-tag { color:#1e3a6e; font-size:10px; font-weight:600; letter-spacing:2px; margin-bottom:30px; }
+.field { text-align:left; margin-bottom:20px; }
+label { display:block; font-size:15px; color:#444; margin-bottom:8px; }
+input {
+  width:100%; padding:14px 16px; font-size:16px;
+  border:1px solid #ccc; border-radius:8px; outline:none;
+}
+input:focus { border-color:#2f7df6; box-shadow:0 0 0 3px rgba(47,125,246,.15); }
+.btn-login {
+  width:100%; padding:16px; background:#2f7df6; color:#fff;
+  border:none; border-radius:8px; font-size:16px; font-weight:700;
+  cursor:pointer; margin-top:8px; transition:.15s;
+}
+.btn-login:hover { background:#2565c8; }
+.btn-login:disabled { opacity:.6; }
+.error { color:#dc2626; font-size:13px; margin-bottom:14px; display:none; }
+.forgot { display:block; margin-top:24px; color:#666; font-size:14px; text-decoration:none; letter-spacing:.5px; }
+.foot { margin-top:auto; padding-top:40px; color:#888; font-size:13px; }
+</style>
+</head>
+<body>
+
+<h1>Login to Continue</h1>
+
+<div class="card">
+  <svg class="logo" viewBox="0 0 120 120">
+    <circle cx="60" cy="52" r="34" fill="none" stroke="#1e3a6e" stroke-width="5"/>
+    <text x="60" y="60" text-anchor="middle" font-size="22" font-weight="800" fill="#1e3a6e" font-family="serif">YBX</text>
+    <path d="M15 78 Q35 98 60 96 Q85 98 105 78" fill="none" stroke="#1e3a6e" stroke-width="5" stroke-linecap="round"/>
+    <path d="M28 30 l4 -14 M34 32 l6 -13 M40 36 l8 -11" stroke="#d9a53a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M92 30 l-4 -14 M86 32 l-6 -13 M80 36 l-8 -11" stroke="#d9a53a" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+  <div class="brand-name">YOWISBENXDEVELOPER</div>
+  <div class="brand-tag">PANEL BOT • AMAN • DAN AWET</div>
+
+  <div class="error" id="err"></div>
+
+  <div class="field">
+    <label>USERNAME OR EMAIL</label>
+    <input id="user" autocomplete="username">
+  </div>
+  <div class="field">
+    <label>PASSWORD</label>
+    <input id="pass" type="password" autocomplete="current-password" onkeypress="if(event.key==='Enter')doLogin()">
+  </div>
+
+  <button class="btn-login" id="btn" onclick="doLogin()">LOGIN</button>
+  <a class="forgot" href="#">FORGOT PASSWORD?</a>
+</div>
+
+<div class="foot">© 2024 - 2026 YowisBenxDeveloper</div>
+
+<script>
+async function doLogin() {
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  btn.disabled = true; btn.textContent = 'LOGIN...'; err.style.display = 'none';
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user.value, password: pass.value })
+    });
+    const j = await r.json();
+    if (j.ok) { localStorage.setItem('yb_token', j.token); location.href = '/panel.html'; }
+    else { err.textContent = j.error; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'LOGIN'; }
+  } catch {
+    err.textContent = 'Server tidak merespons';
+    err.style.display = 'block'; btn.disabled = false; btn.textContent = 'LOGIN';
+  }
+}
+</script>
+</body>
+</html>
