@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YowisBenxDeveloper</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#111214; --bg2:#1b1d21; --card:#1e2024; --card2:#25272c;
+  --border:#2f3237; --text:#e8eaed; --text2:#9aa0a6;
+  --blue:#2563eb; --blue2:#3b82f6; --red:#dc2626; --gray:#6b7280;
+  --cyan:#22d3ee; --green:#22c55e; --amber:#e5a634;
+}
+body {
+  background:var(--bg); color:var(--text); min-height:100vh;
+  font-family:-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+/* ===== TOPBAR ===== */
+.topbar {
+  display:flex; align-items:center; gap:14px;
+  background:#161719; padding:10px 16px;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:50;
+}
+.hamburger {
+  background:none; border:none; cursor:pointer; padding:6px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.hamburger span { width:22px; height:2.5px; background:#fff; border-radius:2px; }
+.brand { font-size:19px; font-weight:700; flex:1; }
+.topbar .icons { display:flex; gap:16px; align-items:center; }
+.icon-btn { background:none; border:none; color:#fff; cursor:pointer; font-size:17px; opacity:.9; }
+.avatar {
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg,#4ade80,#22c55e);
+}
+.conn-dot {
+  width:9px; height:9px; border-radius:50%;
+  background:var(--green); animation:pulse 1.4s infinite; cursor:default;
+}
+.conn-dot.off { background:var(--red); animation:none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* ===== LAYOUT ===== */
+.layout { display:flex; min-height:calc(100vh - 52px); }
+.sidebar {
+  width:290px; background:var(--bg2); padding:18px 14px;
+  display:flex; flex-direction:column; gap:6px; flex-shrink:0;
+  position:sticky; top:52px; height:calc(100vh - 52px); overflow-y:auto;
+}
+.nav-item {
+  display:flex; align-items:center; gap:16px;
+  padding:8px; border-radius:12px; cursor:pointer;
+  color:var(--text); font-size:19px; font-weight:500;
+  transition:.15s; border:none; background:none; width:100%; text-align:left;
+  font-family:inherit;
+}
+.nav-icon {
+  width:52px; height:52px; border-radius:14px; background:#2a2c31;
+  display:grid; place-items:center; font-size:22px; flex-shrink:0;
+  transition:.15s;
+}
+.nav-item:hover .nav-icon { background:#35383e; }
+.nav-item.active .nav-icon { background:linear-gradient(135deg,#ef4444,#dc2626); }
+.nav-item.active { font-weight:600; }
+.main { flex:1; padding:22px; max-width:1100px; margin:0 auto; width:100%; }
+.page { display:none; }
+.page.active { display:block; }
+
+/* ===== POWER BUTTONS ===== */
+.power-row { display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+.pbtn {
+  flex:1; min-width:130px; padding:16px; border:none; border-radius:10px;
+  font-size:19px; font-weight:700; color:#fff; cursor:pointer;
+  font-family:inherit; transition:.15s;
+}
+.pbtn:disabled { opacity:.45; cursor:not-allowed; }
+.btn-start { background:var(--blue); } .btn-start:hover:not(:disabled) { background:#1d4ed8; }
+.btn-restart { background:var(--gray); } .btn-restart:hover:not(:disabled) { background:#4b5563; }
+.btn-stop { background:var(--red); } .btn-stop:hover:not(:disabled) { background:#b91c1c; }
+
+/* ===== CONSOLE ===== */
+.console-box {
+  background:#0d0e10; border:1px solid var(--border); border-radius:8px;
+  height:420px; overflow-y:auto; padding:12px 14px;
+  font-family:'Cascadia Code',Consolas,monospace; font-size:14px; line-height:1.55;
+}
+.cl { white-space:pre-wrap; word-break:break-word; color:#e8eaed; }
+.cl.info { color:#9aa0a6; } .cl.success { color:var(--green); }
+.cl.error { color:#f87171; } .cl.warn { color:var(--amber); }
+.cl.cmd { color:var(--cyan); }
+.cl .prompt { color:var(--amber); }
+.console-input-row {
+  display:flex; align-items:center; gap:10px;
+  background:#0d0e10; border:1px solid var(--border); border-top:none;
+  border-radius:0 0 8px 8px; padding:10px 14px;
+}
+.console-input-row .arrows { color:#fff; font-weight:700; font-family:monospace; }
+.console-input {
+  flex:1; background:none; border:none; outline:none;
+  color:#fff; font-family:'Cascadia Code',Consolas,monospace; font-size:14px;
+}
+
+/* ===== STAT CARDS ===== */
+.stats-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px; margin-top:20px;
+}
+.stat-card {
+  background:var(--card); border-left:3px solid #3a3d43;
+  border-radius:6px; padding:14px 16px;
+}
+.stat-label { color:var(--text2); font-size:14px; margin-bottom:4px; }
+.stat-value { font-size:22px; font-weight:700; }
+.stat-value small { font-size:13px; color:var(--text2); font-weight:400; }
+.stat-value.offline { color:var(--text2); }
+
+/* ===== CHARTS ===== */
+.chart-card {
+  background:var(--card); border-radius:10px; padding:18px;
+  margin-top:16px;
+}
+.chart-title { font-size:20px; font-weight:600; margin-bottom:14px; }
+.chart-card canvas { width:100%; height:160px; display:block; }
+
+/* ===== FILES ===== */
+.files-actions { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+.fbtn {
+  padding:15px; border-radius:8px; border:none; font-size:18px;
+  font-weight:700; color:#fff; cursor:pointer; font-family:inherit;
+}
+.fbtn.gray { background:var(--gray); } .fbtn.gray:hover { background:#4b5563; }
+.fbtn.blue { background:var(--blue); } .fbtn.blue:hover { background:#1d4ed8; }
+.fbtn-row { display:flex; gap:12px; } .fbtn-row .fbtn { flex:1; }
+.up-progress {
+  display:none; background:var(--card); border:1px solid var(--border);
+  border-radius:8px; padding:12px 16px;
+}
+.up-progress.show { display:block; }
+.up-text { font-size:13px; color:var(--text2); }
+.up-bar-bg { height:8px; background:#0d0e10; border-radius:4px; overflow:hidden; margin-top:8px; }
+.up-bar-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg,var(--blue2),var(--cyan));
+  transition:width .2s;
+}
+.breadcrumb {
+  display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  color:var(--text2); font-size:16px; flex-wrap:wrap;
+}
+.breadcrumb a { color:var(--text2); text-decoration:none; cursor:pointer; }
+.breadcrumb a:hover { color:#fff; }
+.file-row {
+  display:flex; align-items:center; gap:12px; padding:12px 10px;
+  border-bottom:1px solid var(--border); font-size:15px;
+}
+.file-row:hover { background:var(--card); }
+.file-row .ficon { font-size:20px; width:26px; text-align:center; }
+.file-row .fname { flex:1; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.file-row .fname:hover { color:var(--blue2); }
+.file-row .fsize { color:var(--text2); font-size:13px; }
+.file-row .fmore {
+  background:none; border:none; color:var(--text2); cursor:pointer;
+  font-size:18px; padding:2px 10px; border-radius:6px; letter-spacing:2px;
+}
+.file-row .fmore:hover { background:var(--card2); color:#fff; }
+.empty-dir { text-align:center; color:var(--text2); padding:30px; font-size:16px; }
+
+/* ===== CONTEXT MENU (ala Pterodactyl) ===== */
+.ctx-menu {
+  position:fixed; z-index:250; display:none;
+  background:#fff; color:#3d3d3d; border-radius:10px;
+  box-shadow:0 12px 34px rgba(0,0,0,.45);
+  min-width:230px; padding:10px 0; overflow:hidden;
+}
+.ctx-menu.show { display:block; animation:ctxIn .12s ease; }
+@keyframes ctxIn { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:none; } }
+.ctx-item {
+  padding:14px 24px; font-size:16px; cursor:pointer;
+  display:flex; align-items:center; gap:16px;
+}
+.ctx-item:hover { background:#f1f1f1; }
+.ctx-item .ci { width:20px; text-align:center; font-size:15px; }
+
+/* ===== EMPTY STATES ===== */
+.empty-state { text-align:center; padding:40px 10px; }
+.empty-state p { font-size:18px; margin-bottom:24px; }
+.btn-primary {
+  background:var(--blue); color:#fff; border:none; border-radius:8px;
+  padding:14px 24px; font-size:16px; font-weight:600; cursor:pointer;
+  font-family:inherit; float:right;
+}
+.btn-primary:hover { background:#1d4ed8; }
+
+/* ===== CARDS ===== */
+.panel-card { background:var(--card); border-radius:10px; padding:20px; margin-bottom:18px; }
+.panel-card h3 {
+  font-size:15px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text2); margin-bottom:16px; font-weight:600;
+}
+.form-label { font-size:13px; color:var(--text2); text-transform:uppercase; margin-bottom:6px; display:block; }
+.form-input, .form-select, .form-area {
+  width:100%; background:#141518; border:1px solid var(--border);
+  border-radius:8px; color:var(--text); padding:12px 14px;
+  font-size:15px; font-family:inherit; outline:none;
+}
+.form-input:focus, .form-area:focus { border-color:var(--blue2); }
+.form-area { min-height:90px; resize:vertical; }
+.note-box {
+  border-left:4px solid var(--cyan); background:#181a1e;
+  padding:12px 16px; border-radius:0 8px 8px 0;
+  color:var(--text2); font-size:14px; line-height:1.5;
+}
+.debug-row { display:flex; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+.debug-row .k { color:var(--text2); font-size:15px; }
+.debug-row .v {
+  background:#141518; border:1px solid var(--border); border-radius:6px;
+  padding:6px 12px; font-family:monospace; font-size:13px; word-break:break-all;
+}
+
+/* ===== MODAL ===== */
+.modal-bg {
+  position:fixed; inset:0; background:rgba(0,0,0,.65);
+  display:none; align-items:center; justify-content:center; z-index:100; padding:16px;
+}
+.modal-bg.show { display:flex; }
+.modal {
+  background:var(--card); border-radius:12px; width:100%; max-width:700px;
+  max-height:88vh; display:flex; flex-direction:column; border:1px solid var(--border);
+}
+.modal-head {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px 20px; border-bottom:1px solid var(--border); font-weight:600;
+}
+.modal-close { cursor:pointer; color:var(--text2); font-size:20px; background:none; border:none; }
+.modal-body { padding:20px; overflow-y:auto; flex:1; }
+.editor-area {
+  width:100%; height:340px; background:#0d0e10; border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-family:monospace; font-size:13px;
+  padding:12px; outline:none; resize:vertical; white-space:pre;
+}
+.modal-foot { padding:14px 20px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+
+/* ===== FOOTER / TOAST ===== */
+.foot { text-align:center; color:var(--text2); padding:26px; font-size:14px; }
+#toastWrap {
+  position:fixed; bottom:20px; right:20px; z-index:300;
+  display:flex; flex-direction:column; gap:8px;
+}
+.toast {
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); padding:11px 16px; border-radius:8px;
+  font-size:13px; box-shadow:0 6px 18px rgba(0,0,0,.5);
+  animation:toastIn .25s ease; max-width:320px; word-break:break-word;
+}
+@keyframes toastIn { from { transform:translateY(12px); opacity:0; } to { transform:none; opacity:1; } }
+
+/* ===== MOBILE SIDEBAR ===== */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:60; }
+.overlay.show { display:block; }
+@media (max-width:820px) {
+  .sidebar {
+    position:fixed; left:-300px; top:0; height:100vh; z-index:70;
+    padding-top:70px; transition:left .25s;
+  }
+  .sidebar.open { left:0; }
+  .stat-value { font-size:18px; }
+}
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-thumb { background:#3a3d43; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="hamburger" id="btnHamburger"><span></span><span></span><span></span></button>
+  <div class="brand" id="brandName">YowisBenxDeveloper</div>
+  <div class="icons">
+    <div class="conn-dot" id="connDot" title="Real-time connection"></div>
+    <button class="icon-btn" onclick="go('console')">🔍</button>
+    <button class="icon-btn" onclick="go('files')">🗂️</button>
+    <div class="avatar"></div>
+    <button class="icon-btn" onclick="logout()">⏻</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <button class="nav-item active" data-page="console" onclick="go('console')"><span class="nav-icon">⌨️</span>Console</button>
+    <button class="nav-item" data-page="files" onclick="go('files')"><span class="nav-icon">📁</span>Files</button>
+    <button class="nav-item" data-page="databases" onclick="go('databases')"><span class="nav-icon">🗄️</span>Databases</button>
+    <button class="nav-item" data-page="schedules" onclick="go('schedules')"><span class="nav-icon">🕐</span>Schedules</button>
+    <button class="nav-item" data-page="users" onclick="go('users')"><span class="nav-icon">👤</span>Users</button>
+    <button class="nav-item" data-page="backups" onclick="go('backups')"><span class="nav-icon">⏪</span>Backups</button>
+    <button class="nav-item" data-page="network" onclick="go('network')"><span class="nav-icon">🌐</span>Network</button>
+    <button class="nav-item" data-page="startup" onclick="go('startup')"><span class="nav-icon">▶️</span>Startup</button>
+    <button class="nav-item" data-page="settings" onclick="go('settings')"><span class="nav-icon">⚙️</span>Settings</button>
+  </div>
+
+  <div class="main">
+    <!-- ===== PAGE: CONSOLE ===== -->
+    <div class="page active" id="page-console">
+      <div class="power-row">
+        <button class="pbtn btn-start" id="pStart" onclick="power('start')">Start</button>
+        <button class="pbtn btn-restart" id="pRestart" onclick="power('restart')" disabled>Restart</button>
+        <button class="pbtn btn-stop" id="pStop" onclick="power('stop')" disabled>Stop</button>
+      </div>
+      <div class="console-box" id="console"></div>
+      <div class="console-input-row">
+        <span class="arrows">&gt;&gt;</span>
+        <input class="console-input" id="cmdInput" placeholder="Type a command..." autocomplete="off">
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Address</div><div class="stat-value" id="stAddress">—</div></div>
+        <div class="stat-card"><div class="stat-label">Uptime</div><div class="stat-value offline" id="stUptime">Offline</div></div>
+        <div class="stat-card"><div class="stat-label">CPU Load</div><div class="stat-value offline" id="stCpu">Offline</div></div>
+        <div class="stat-card"><div class="stat-label">Memory</div><div class="stat-value offline" id="stMem">Offline</div></div>
+        <div class="stat-card"><div class="stat-label">Disk</div><div class="stat-value" id="stDisk">0 B <small>—</small></div></div>
+        <div class="stat-card"><div class="stat-label">Network (Inbound)</div><div class="stat-value offline" id="stNetIn">Offline</div></div>
+        <div class="stat-card"><div class="stat-label">Network (Outbound)</div><div class="stat-value offline" id="stNetOut">Offline</div></div>
+      </div>
+      <div class="chart-card"><div class="chart-title">CPU Load</div><canvas id="chCpu"></canvas></div>
+      <div class="chart-card"><div class="chart-title">Memory</div><canvas id="chMem"></canvas></div>
+      <div class="chart-card"><div class="chart-title">Network <span style="float:right">⬇️ ⬆️</span></div><canvas id="chNet"></canvas></div>
+    </div>
+
+    <!-- ===== PAGE: FILES ===== -->
+    <div class="page" id="page-files">
+      <div class="files-actions">
+        <button class="fbtn gray" onclick="mkdirPrompt()">Create Directory</button>
+        <div class="fbtn-row">
+          <button class="fbtn blue" onclick="document.getElementById('upInput').click()">Upload</button>
+          <button class="fbtn blue" onclick="newFilePrompt()">New File</button>
+        </div>
+        <input type="file" id="upInput" multiple style="display:none" onchange="uploadFiles(this.files)">
+        <div class="up-progress" id="upProgress">
+          <div class="up-text" id="upText">Uploading...</div>
+          <div class="up-bar-bg"><div class="up-bar-fill" id="upBar"></div></div>
+        </div>
+      </div>
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div id="fileList"></div>
+    </div>
+
+    <!-- ===== PAGE: DATABASES ===== -->
+    <div class="page" id="page-databases">
+      <div class="empty-state">
+        <p>It looks like you have no databases.</p>
+        <button class="btn-primary" onclick="alert('Fitur database belum diaktifkan di server ini')">NEW DATABASE</button>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: SCHEDULES ===== -->
+    <div class="page" id="page-schedules">
+      <div class="empty-state">
+        <p>It looks like you have no schedules.</p>
+        <button class="btn-primary" onclick="alert('Fitur schedules belum diaktifkan')">CREATE SCHEDULE</button>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: USERS ===== -->
+    <div class="page" id="page-users">
+      <div class="empty-state">
+        <p>It looks like you don't have any subusers.</p>
+        <button class="btn-primary" onclick="alert('Fitur subusers belum diaktifkan')">New User</button>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: BACKUPS ===== -->
+    <div class="page" id="page-backups">
+      <div class="empty-state">
+        <p>It looks like you don't have any backups.</p>
+        <button class="btn-primary" onclick="alert('Backup akan segera hadir')">TAKE BACKUP</button>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: NETWORK ===== -->
+    <div class="page" id="page-network">
+      <div class="panel-card">
+        <div class="debug-row" style="align-items:center">
+          <span style="font-size:24px">🌐</span>
+          <div style="flex:1">
+            <div class="form-label">HOSTNAME</div>
+            <div class="form-input" id="netHost" style="font-family:monospace">YowisBenx</div>
+          </div>
+          <div style="width:110px">
+            <div class="form-label">PORT</div>
+            <div class="form-input" id="netPort" style="font-family:monospace">3000</div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="form-label">NOTES</div>
+          <textarea class="form-area" placeholder="Notes..."></textarea>
+        </div>
+        <div style="margin-top:16px; text-align:right">
+          <button class="btn-primary">Primary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: STARTUP ===== -->
+    <div class="page" id="page-startup">
+      <div class="panel-card">
+        <h3>Startup Command</h3>
+        <input class="form-input" id="suCmd" style="font-family:monospace">
+      </div>
+      <div class="panel-card">
+        <h3>Docker Image</h3>
+        <select class="form-select" id="suImage">
+          <option>Node 20 LTS + Vips/FFmpeg</option>
+          <option>Node 20 LTS</option>
+          <option>Node 18 LTS</option>
+          <option>Python 3.11</option>
+        </select>
+        <p style="color:var(--text2); font-size:13px; margin-top:10px">
+          This is an advanced feature allowing you to select a Docker image to use when running this server instance.
+        </p>
+      </div>
+      <h2 style="margin:10px 0 14px; font-size:26px">Variables</h2>
+      <div class="panel-card">
+        <h3>Startup Command 1</h3>
+        <input class="form-input" id="suVar1" style="font-family:monospace">
+        <p style="color:var(--text2); font-size:13px; margin-top:8px">First Startup Command</p>
+      </div>
+      <div class="panel-card">
+        <h3>Startup Command 2 (Optional)</h3>
+        <input class="form-input" id="suVar2" style="font-family:monospace">
+        <p style="color:var(--text2); font-size:13px; margin-top:8px">Second Startup Command</p>
+      </div>
+      <div class="panel-card">
+        <h3>Auto Install Dependencies</h3>
+        <select class="form-select" id="suAuto">
+          <option value="1">Enabled — npm install sebelum start</option>
+          <option value="0">Disabled</option>
+        </select>
+      </div>
+      <div style="text-align:right; margin-bottom:20px">
+        <button class="btn-primary" onclick="saveStartup()">Save</button>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: SETTINGS ===== -->
+    <div class="page" id="page-settings">
+      <div class="panel-card">
+        <h3>SFTP Details</h3>
+        <div class="form-label">Server Address</div>
+        <input class="form-input" readonly style="font-family:monospace" id="sftpAddr">
+        <p class="note-box" style="margin-top:14px">Your SFTP password is the same as the password you use to access this panel.</p>
+      </div>
+      <div class="panel-card">
+        <h3>Debug Information</h3>
+        <div class="debug-row"><span class="k">Node</span><span class="v" id="dbgNode">YowisBenx Main</span></div>
+        <div class="debug-row"><span class="k">Server ID</span><span class="v" id="dbgId">—</span></div>
+      </div>
+      <div class="panel-card">
+        <h3>Change Server Details</h3>
+        <div class="form-label">Server Name</div>
+        <input class="form-input" id="setName">
+        <div class="form-label" style="margin-top:14px">Server Description</div>
+        <textarea class="form-area" id="setDesc"></textarea>
+        <div style="text-align:right; margin-top:16px">
+          <button class="btn-primary" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h3>Reinstall Server</h3>
+        <p style="color:var(--text2); font-size:14px; line-height:1.6; margin-bottom:14px">
+          Reinstalling your server will stop it, and re-run the installation script (npm install).
+          <b>Some files may be modified during this process.</b>
+        </p>
+        <div style="text-align:right">
+          <button class="btn-primary" style="background:var(--red)" onclick="reinstall()">Reinstall Server</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot" id="foot">YowisBenxDeveloper © 2026</div>
+
+<!-- FILE EDITOR MODAL -->
+<div class="modal-bg" id="editorModal">
+  <div class="modal" style="max-width:800px">
+    <div class="modal-head"><span id="editorTitle">file</span><button class="modal-close" onclick="closeModal('editorModal')">✕</button></div>
+    <div class="modal-body"><textarea class="editor-area" id="editorArea" spellcheck="false"></textarea></div>
+    <div class="modal-foot">
+      <button class="btn-primary" style="background:var(--gray)" onclick="closeModal('editorModal')">Close</button>
+      <button class="btn-primary" onclick="saveFile()">Save Content</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" data-act="rename"><span class="ci">✏️</span>Rename</div>
+  <div class="ctx-item" data-act="move"><span class="ci">↥</span>Move</div>
+  <div class="ctx-item" data-act="perm"><span class="ci">🔓</span>Permissions</div>
+  <div class="ctx-item" data-act="copy"><span class="ci">📋</span>Copy</div>
+  <div class="ctx-item" data-act="unarchive"><span class="ci">📦</span>Unarchive</div>
+  <div class="ctx-item" data-act="download"><span class="ci">⬇️</span>Download</div>
+  <div class="ctx-item" data-act="delete"><span class="ci">🗑️</span>Delete</div>
+</div>
+
+<div id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   YowisBenxDeveloper — Panel Client (Real-Time Engine)
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ---------- AUTH ---------- */
+const TOKEN = localStorage.getItem('yb_token');
+if (!TOKEN) location.href = '/';
+const H = { 'Content-Type': 'application/json', 'x-auth': TOKEN };
+
+async function api(url, opts = {}) {
+  const r = await fetch(url, { headers: H, ...opts });
+  if (r.status === 401) { location.href = '/'; throw new Error('unauth'); }
+  return r.json();
+}
+
+/* ---------- TOAST ---------- */
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  $('toastWrap').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2800);
+}
+
+/* ---------- SIDEBAR (fixed — getElementById, bukan global `sidebar`) ---------- */
+ $('btnHamburger').addEventListener('click', toggleSidebar);
+ $('overlay').addEventListener('click', toggleSidebar);
+
+function toggleSidebar() {
+  $('sidebar').classList.toggle('open');
+  $('overlay').classList.toggle('show');
+}
+
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  $('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+  if (window.innerWidth <= 820) {
+    $('sidebar').classList.remove('open');
+    $('overlay').classList.remove('show');
+  }
+  if (page === 'files') loadFiles(currentPath);
+  if (page === 'startup' || page === 'settings') loadConfigUI();
+}
+
+function logout() { localStorage.removeItem('yb_token'); location.href = '/'; }
+function closeModal(id) { $(id).classList.remove('show'); }
+
+/* ---------- SOCKET REAL-TIME ---------- */
+const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: Infinity });
+
+socket.on('connect', () => {
+  $('connDot').classList.remove('off');
+  socket.emit('auth', TOKEN);
+});
+socket.on('disconnect', () => $('connDot').classList.add('off'));
+
+socket.on('console', line => pushLine(line));
+socket.on('console:history', lines => { consoleEl.innerHTML = ''; lines.forEach(pushLine); });
+socket.on('power:state', s => setPower(s.running));
+socket.on('config', c => applyConfig(c));
+socket.on('stats', s => updateStats(s));
+socket.on('files:changed', info => {
+  if ($('page-files').classList.contains('active')) loadFiles(currentPath);
+  if (info && info.filename) toast('📂 ' + (info.event === 'upload' ? 'Upload: ' : 'File changed: ') + info.filename);
+});
+
+const consoleEl = $('console');
+function pushLine(l) {
+  const d = document.createElement('div');
+  d.className = 'cl ' + (l.type || 'normal');
+  if (l.type === 'cmd') d.innerHTML = `<span class="prompt">container@yowisbenx~</span> ${esc(l.text)}`;
+  else d.textContent = l.text;
+  consoleEl.appendChild(d);
+  while (consoleEl.children.length > 500) consoleEl.firstChild.remove();
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+/* ---------- POWER ---------- */
+function power(a) { socket.emit('power', a); }
+function setPower(running) {
+  $('pStart').disabled = running;
+  $('pStop').disabled = !running;
+  $('pRestart').disabled = !running;
+}
+
+/* ---------- COMMAND INPUT + HISTORY ---------- */
+const cmdHistory = []; let histIdx = -1;
+ $('cmdInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && $('cmdInput').value.trim()) {
+    cmdHistory.push($('cmdInput').value.trim());
+    if (cmdHistory.length > 100) cmdHistory.shift();
+    histIdx = cmdHistory.length;
+    socket.emit('command', $('cmdInput').value.trim());
+    $('cmdInput').value = '';
+  } else if (e.key === 'ArrowUp' && histIdx > 0) {
+    histIdx--; $('cmdInput').value = cmdHistory[histIdx]; e.preventDefault();
+  } else if (e.key === 'ArrowDown') {
+    histIdx = Math.min(cmdHistory.length, histIdx + 1);
+    $('cmdInput').value = cmdHistory[histIdx] || ''; e.preventDefault();
+  }
+});
+
+/* ---------- STATS + CHARTS ---------- */
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  if (b < 1073741824) return (b/1048576).toFixed(1) + ' MB';
+  return (b/1073741824).toFixed(2) + ' GB';
+}
+function fmtUptime(s) {
+  const h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = s%60;
+  return `${h}h ${m}m ${sec}s`;
+}
+const cpuHist = [], memHist = [], netHist = [];
+let lastStats = null;
+
+function updateStats(s) {
+  lastStats = s;
+  $('stAddress').textContent = s.address;
+  const on = s.running;
+  const set = (id, val, offline = 'Offline') => {
+    const el = $(id);
+    el.textContent = on ? val : offline;
+    el.classList.toggle('offline', !on);
+  };
+  set('stUptime', fmtUptime(s.uptime));
+  set('stCpu', s.cpu + '%');
+  set('stMem', fmtSize(s.mem));
+  $('stDisk').innerHTML = (s.disk || '0 B') + ` <small>/ ${fmtSize(s.memLimit)}</small>`;
+  set('stNetIn', fmtSize(s.netIn) + '/s');
+  set('stNetOut', fmtSize(s.netOut) + '/s');
+
+  cpuHist.push(on ? s.cpu : 0); if (cpuHist.length > 60) cpuHist.shift();
+  memHist.push(on ? s.mem / s.memLimit * 100 : 0); if (memHist.length > 60) memHist.shift();
+  netHist.push([on ? s.netIn : 0, on ? s.netOut : 0]); if (netHist.length > 60) netHist.shift();
+  drawChart('chCpu', cpuHist.map(v => [v]), ['#22d3ee'], 100, '%');
+  drawChart('chMem', memHist.map(v => [v]), ['#22d3ee'], 100, '%');
+  const maxNet = Math.max(1024, ...netHist.flat()) * 1.2;
+  drawChart('chNet', netHist, ['#f59e0b', '#f87171'], maxNet, '');
+}
+
+function drawChart(id, series, colors, max, unit) {
+  const cv = $(id);
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = 160;
+  if (!w) return;
+  if (cv.width !== w * dpr) { cv.width = w * dpr; cv.height = h * dpr; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#2f3237'; ctx.fillStyle = '#9aa0a6';
+  ctx.font = '11px sans-serif'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 2; i++) {
+    const y = 10 + i * ((h - 20) / 2);
+    ctx.beginPath(); ctx.moveTo(52, y); ctx.lineTo(w - 6, y); ctx.stroke();
+    const label = (max - i * max / 2);
+    ctx.fillText((unit === '%' ? label.toFixed(0) + unit : fmtSize(label)), 4, y + 4);
+  }
+  series.forEach((data, si) => {
+    ctx.strokeStyle = colors[si]; ctx.lineWidth = 2; ctx.beginPath();
+    const n = data.length;
+    if (n > 0) {
+      data.forEach((v, i) => {
+        const x = 52 + i * ((w - 60) / 59);
+        const y = h - 10 - (Math.min(v, max) / max) * (h - 20);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+  });
+}
+window.addEventListener('resize', () => { if (lastStats) updateStats(lastStats); });
+
+/* ---------- FILES + CONTEXT MENU ---------- */
+let currentPath = '/';
+function joinP(dir, name) { return (dir === '/' ? '' : dir) + '/' + name; }
+
+function loadFiles(p) {
+  currentPath = p || '/';
+  api(`/api/files?path=${encodeURIComponent(currentPath)}`).then(j => {
+    if (!j.ok) return alert(j.error);
+    renderBreadcrumb();
+    const list = $('fileList');
+    list.innerHTML = '';
+    if (j.entries.length === 0) {
+      list.innerHTML = '<div class="empty-dir">This directory seems to be empty.</div>';
+      return;
+    }
+    j.entries.forEach(e => {
+      const fullPath = joinP(currentPath, e.name);
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      const icon = e.dir ? '📁' : e.name.endsWith('.js') ? '📜' : e.name.endsWith('.json') ? '⚙️'
+        : e.name.match(/\.(png|jpg|jpeg|webp|gif)$/i) ? '🖼️' : e.name.endsWith('.zip') ? '📦' : '📄';
+      row.innerHTML = `
+        <span class="ficon">${icon}</span>
+        <span class="fname">${esc(e.name)}</span>
+        <span class="fsize">${e.dir ? '—' : fmtSize(e.size)}</span>
+        <button class="fmore" title="Options">•••</button>`;
+      row.querySelector('.fname').onclick = () => {
+        if (e.dir) loadFiles(fullPath);
+        else openEditor(fullPath);
+      };
+      row.querySelector('.fmore').onclick = ev => openCtx(ev, fullPath, e.dir);
+      list.appendChild(row);
+    });
+  });
+}
+
+let ctxTarget = null;
+let ctxIsDir = false;
+
+function openCtx(ev, fullPath, isDir) {
+  ev.stopPropagation();
+  ctxTarget = fullPath;
+  ctxIsDir = isDir;
+  const m = $('ctxMenu');
+  m.classList.add('show');
+  const mw = 250, mh = 390;
+  let x = ev.clientX, y = ev.clientY;
+  if (x + mw > window.innerWidth) x = window.innerWidth - mw - 10;
+  if (y + mh > window.innerHeight) y = window.innerHeight - mh - 10;
+  m.style.left = x + 'px';
+  m.style.top = y + 'px';
+}
+document.addEventListener('click', () => $('ctxMenu').classList.remove('show'));
+document.addEventListener('scroll', () => $('ctxMenu').classList.remove('show'), true);
+
+document.querySelectorAll('.ctx-item').forEach(item => {
+  item.addEventListener('click', () => handleCtx(item.dataset.act));
+});
+
+function handleCtx(act) {
+  const p = ctxTarget;
+  const name = p.split('/').pop();
+  $('ctxMenu').classList.remove('show');
+  if (!p) return;
+
+  if (act === 'rename') {
+    const nn = prompt('New name:', name);
+    if (!nn || nn === name) return;
+    api('/api/file/rename', { method: 'POST', body: JSON.stringify({ from: p, to: joinP(currentPath, nn) }) })
+      .then(() => loadFiles(currentPath));
+  }
+
+  else if (act === 'move') {
+    const np = prompt('Move to path (contoh: /folder):', currentPath === '/' ? '/' + name : currentPath + '/' + name);
+    if (!np || np === p) return;
+    api('/api/file/rename', { method: 'POST', body: JSON.stringify({ from: p, to: np }) })
+      .then(() => loadFiles(currentPath));
+  }
+
+  else if (act === 'perm') {
+    const mode = prompt('Permissions (contoh: 0755):', '0644');
+    if (!mode) return;
+    api('/api/file/chmod', { method: 'POST', body: JSON.stringify({ path: p, mode }) })
+      .then(j => { if (j.ok) toast('🔓 Permissions: ' + mode); });
+  }
+
+  else if (act === 'copy') {
+    const nn = prompt('Copy name:', name + ' - Copy');
+    if (!nn) return;
+    api('/api/file/copy', { method: 'POST', body: JSON.stringify({ from: p, to: joinP(currentPath, nn) }) })
+      .then(() => loadFiles(currentPath));
+  }
+
+  else if (act === 'unarchive') {
+    toast('📦 Extracting...');
+    api('/api/file/unarchive', { method: 'POST', body: JSON.stringify({ path: p }) })
+      .then(j => {
+        if (j.ok) toast('✓ Extracted: ' + name);
+        else alert(j.error);
+        loadFiles(currentPath);
+      });
+  }
+
+  else if (act === 'download') {
+    if (ctxIsDir) toast('📦 Membungkus folder jadi .zip...');
+    fetch(`/api/file/download?path=${encodeURIComponent(p)}`, { headers: { 'x-auth': TOKEN } })
+      .then(r => { if (!r.ok) throw new Error(); return r.blob(); })
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name + (ctxIsDir ? '.zip' : '');
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast('⬇️ Downloaded: ' + name);
+      })
+      .catch(() => alert('Download gagal'));
+  }
+
+  else if (act === 'delete') {
+    if (!confirm('Delete ' + name + '?')) return;
+    api('/api/file/delete', { method: 'POST', body: JSON.stringify({ path: p }) })
+      .then(() => loadFiles(currentPath));
+  }
+}
+
+function renderBreadcrumb() {
+  const bc = $('breadcrumb');
+  bc.innerHTML = `<a data-p="/">/ home / container /</a>`;
+  if (currentPath !== '/') {
+    const parts = currentPath.split('/').filter(Boolean);
+    parts.forEach((pt, i) => {
+      const pp = '/' + parts.slice(0, i + 1).join('/');
+      bc.innerHTML += ` <a data-p="${esc(pp)}">${esc(pt)}</a> /`;
+    });
+  }
+  bc.querySelectorAll('a').forEach(a => a.onclick = () => loadFiles(a.dataset.p));
+}
+
+function uploadFiles(files) {
+  if (!files || !files.length) return;
+  const fd = new FormData();
+  fd.append('path', currentPath);
+  [...files].forEach(f => fd.append('files', f));
+  const xhr = new XMLHttpRequest();
+  const box = $('upProgress'), bar = $('upBar'), txt = $('upText');
+  box.classList.add('show');
+  bar.style.width = '0%';
+  xhr.open('POST', '/api/upload');
+  xhr.setRequestHeader('x-auth', TOKEN);
+  xhr.upload.onprogress = e => {
+    if (e.lengthComputable) {
+      const pct = (e.loaded / e.total * 100).toFixed(1);
+      bar.style.width = pct + '%';
+      txt.textContent = `Uploading ${files.length} file(s)... ${pct}% (${fmtSize(e.loaded)} / ${fmtSize(e.total)})`;
+    }
+  };
+  xhr.onload = () => {
+    bar.style.width = '100%';
+    txt.textContent = '✓ Upload complete!';
+    toast('✓ Upload selesai — ' + files.length + ' file');
+    setTimeout(() => { box.classList.remove('show'); bar.style.width = '0%'; }, 2500);
+    loadFiles(currentPath);
+  };
+  xhr.onerror = () => { txt.textContent = '✗ Upload gagal'; };
+  xhr.send(fd);
+  $('upInput').value = '';
+}
+
+function mkdirPrompt() {
+  const name = prompt('Directory name:');
+  if (!name) return;
+  api('/api/mkdir', { method: 'POST', body: JSON.stringify({ path: joinP(currentPath, name) }) })
+    .then(() => loadFiles(currentPath));
+}
+function newFilePrompt() {
+  const name = prompt('File name (contoh: index.js):');
+  if (!name) return;
+  api('/api/file/write', { method: 'POST', body: JSON.stringify({ path: joinP(currentPath, name), content: '' }) })
+    .then(() => loadFiles(currentPath));
+}
+
+let editingPath = null;
+async function openEditor(p) {
+  editingPath = p;
+  const j = await api(`/api/file/read?path=${encodeURIComponent(p)}`);
+  if (!j.ok) return alert(j.error);
+  $('editorTitle').textContent = p;
+  $('editorArea').value = j.content;
+  $('editorModal').classList.add('show');
+}
+function saveFile() {
+  api('/api/file/write', { method: 'POST', body: JSON.stringify({ path: editingPath, content: $('editorArea').value }) })
+    .then(j => { if (j.ok) { closeModal('editorModal'); toast('💾 Saved: ' + editingPath); } });
+}
+
+/* ---------- CONFIG / STARTUP / SETTINGS ---------- */
+function applyConfig(c) {
+  $('brandName').textContent = c.serverName || 'YowisBenxDeveloper';
+  $('foot').textContent = (c.serverName || 'YowisBenxDeveloper') + ' © 2026';
+  $('suCmd').value = c.startup; $('suImage').value = c.dockerImage;
+  $('suVar1').value = c.var1; $('suVar2').value = c.var2; $('suAuto').value = c.autoInstall;
+  $('setName').value = c.serverName; $('setDesc').value = c.description;
+  $('netHost').value = c.serverName;
+  $('netPort').textContent = location.port || '3000';
+  $('sftpAddr').value = location.hostname ? `sftp://${location.hostname}:2022` : '—';
+  $('dbgId').textContent = TOKEN ? TOKEN.slice(0, 18) + '...' : '—';
+}
+function loadConfigUI() { api('/api/config').then(j => j.ok && applyConfig(j.config)); }
+function saveStartup() {
+  api('/api/config', { method: 'POST', body: JSON.stringify({
+    startup: $('suCmd').value, dockerImage: $('suImage').value,
+    var1: $('suVar1').value, var2: $('suVar2').value, autoInstall: $('suAuto').value
+  })}).then(j => j.ok && toast('✓ Startup configuration saved'));
+}
+function saveSettings() {
+  api('/api/config', { method: 'POST', body: JSON.stringify({
+    serverName: $('setName').value, description: $('setDesc').value
+  })}).then(j => j.ok && toast('✓ Server details saved'));
+}
+function reinstall() {
+  if (!confirm('Reinstall server? Bot akan distop lalu npm install dijalankan ulang.')) return;
+  socket.emit('power', 'stop');
+  setTimeout(() => socket.emit('command', 'npm install --production'), 2000);
+}
+
+/* ---------- INIT ---------- */
+loadFiles('/');
+loadConfigUI();
+</script>
+</body>
+  </html>
